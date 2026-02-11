@@ -1,10 +1,10 @@
 # Import any dependencies needed to execute sql queries
-import sql_execution
+from .sql_execution import QueryMixin
 
 # Define a class called QueryBase
 # Use inheritance to add methods
 # for querying the employee_events database.
-class QueryBase(sql_execution):
+class QueryBase(QueryMixin):
 
     # Create a class attribute called `name`
     # set the attribute to an empty string
@@ -30,13 +30,15 @@ class QueryBase(sql_execution):
         # Use f-string formatting to set the name
         # of id columns used for joining
         # order by the event_date column
-        return self.pandas_query(f"""i
+
+        return self.pandas_query(f"""
             SELECT 
                 event_date,
-                SUM(CASE WHEN event_type = 'positive' THEN 1 ELSE 0 END) AS positive_events,
-                SUM(CASE WHEN event_type = 'negative' THEN 1 ELSE 0 END) AS negative_events
+                SUM(positive_events) AS positive_events,
+                SUM(negative_events) AS negative_events
             FROM {self.name}
-            WHERE {self.name}_id = {id}
+            JOIN employee_events ON employee_events.{self.name}_id = {self.name}.{self.name}_id
+            WHERE {self.name}.{self.name}_id = {id}
             GROUP BY event_date
             ORDER BY event_date;
         """)
@@ -57,6 +59,6 @@ class QueryBase(sql_execution):
         return self.pandas_query(f"""
             SELECT notes.note_date, notes.note
             FROM notes
-            JOIN {self.name}
-            ON {self.name}.{self.id_column} = notes.{self.id_column}
+            JOIN {self.name} ON {self.name}.{self.name}_id = notes.{self.name}_id
+            WHERE {self.name}.{self.name}_id = {id}
             """)

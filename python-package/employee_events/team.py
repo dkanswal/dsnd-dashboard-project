@@ -1,10 +1,10 @@
 # Import the QueryBase class
 import sqlite3
 from turtle import pd
-import employee_events.query_base as QueryBase
+from .query_base import QueryBase
 
 # Import dependencies for sql execution
-import employee_events.sql_execution as SQLexecution
+from .sql_execution import QueryMixin
 
 # Create a subclass of QueryBase
 # called  `Team`
@@ -31,7 +31,7 @@ class Team(QueryBase):
             team_id
         FROM team;
     """
-        return SQLexecution.query(self.db_path, sql)
+        return self.query(sql)
     
 
     # Define a `username` method
@@ -47,7 +47,7 @@ class Team(QueryBase):
         # to only return the team name related to
         # the ID argument
         sql = f""" SELECT team_name FROM team WHERE team_id = {id}; """
-        return SQLexecution.query(self.db_path, sql)
+        return self.query( sql)
 
 
     # Below is method with an SQL query
@@ -72,5 +72,6 @@ class Team(QueryBase):
                     GROUP BY employee_id
                    )
                 """
-        with sqlite3.connect(self.db_path) as conn:
-            return pd.read_sql_query(sql, conn)
+        return self.query(sql) 
+        # with sqlite3.connect(self.db_path) as conn:
+        #     return pd.read_sql_query(sql, conn)

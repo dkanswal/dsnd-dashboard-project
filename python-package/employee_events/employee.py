@@ -2,11 +2,11 @@ import sqlite3
 import pandas as pd
 
 # Import the QueryBase class
-import employee_events.query_base as QueryBase
+from .query_base import QueryBase
 
 # Import dependencies needed for sql execution
 # from the `sql_execution` module
-import employee_events.sql_execution as SQLexecution
+from .sql_execution import QueryMixin
 
 # Define a subclass of QueryBase
 # called Employee
@@ -35,7 +35,7 @@ class Employee(QueryBase):
                 employee_id
             FROM employee;
         """
-        return SQLexecution.query(self.db_path, sql)
+        return self.query(sql)
 
     # Define a method called `username`
     # that receives an `id` argument
@@ -50,7 +50,7 @@ class Employee(QueryBase):
         # to only return the full name of the employee
         # with an id equal to the id argument
         sql = f""" SELECT first_name || ' ' || last_name AS full_name FROM employee WHERE employee_id = {id}; """
-        return SQLexecution.query(self.db_path, sql)
+        return QueryMixin.query(sql)
 
 
     # Below is method with an SQL query
@@ -71,6 +71,6 @@ class Employee(QueryBase):
                         USING({self.name}_id)
                     WHERE {self.name}.{self.name}_id = {id}
                 """
-        
-        with sqlite3.connect(self.db_path) as conn:
-            return pd.read_sql_query(sql, conn)
+        return self.query(sql) 
+        # with sqlite3.connect(self.db_path) as conn:
+        #     return pd.read_sql_query(sql, conn)

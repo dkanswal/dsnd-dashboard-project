@@ -18,7 +18,7 @@ class QueryMixin:
     # and returns the query's result
     # as a pandas dataframe
     def pandas_query(self, sql: str) -> pd.DataFrame:
-        with connect(self.db_path) as conn:
+        with connect(db_path) as conn:
             return pd.read_sql_query(sql, conn)
     
 
@@ -28,7 +28,7 @@ class QueryMixin:
     # a list of tuples. (You will need
     # to use an sqlite3 cursor)
     def query(self, sql_query:str) -> List[Tuple]:
-        with connect(self.db_path) as conn:
+        with connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(sql_query)
             return cursor.fetchall()
@@ -36,20 +36,20 @@ class QueryMixin:
 
  
  # Leave this code unchanged
-    def query(func):
-        """
-        Decorator that runs a standard sql execution
-        and returns a list of tuples
-        """
+    # def query(func):
+    #     """
+    #     Decorator that runs a standard sql execution
+    #     and returns a list of tuples
+    #     """
 
-    def run_query_decorator(func):
-        @wraps(func)
-        def run_query(*args, **kwargs):
-            query_string = func(*args, **kwargs)
-            connection = connect(db_path)
-            cursor = connection.cursor()
-            result = cursor.execute(query_string).fetchall()
-            connection.close()
-            return result
+    # def run_query_decorator(func):
+    #     @wraps(func)
+    #     def run_query(*args, **kwargs):
+    #         query_string = func(*args, **kwargs)
+    #         connection = connect(db_path)
+    #         cursor = connection.cursor()
+    #         result = cursor.execute(query_string).fetchall()
+    #         connection.close()
+    #         return result
     
-        return run_query
+    #     return run_query

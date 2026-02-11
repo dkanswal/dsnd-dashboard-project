@@ -2,12 +2,12 @@ from fasthtml.common import *
 import matplotlib.pyplot as plt
 
 # Import QueryBase, Employee, Team from employee_events
-import employee_events.query_base as QueryBase
-import employee_events.employee as Employee
-import employee_events.team as Team
+from employee_events.query_base import QueryMixin
+from employee_events.employee import Employee
+from employee_events.team import Team
 
 # import the load_model function from the utils.py file
-import report.utils as Utils
+import utils as Utils
 
 
 """
@@ -49,7 +49,7 @@ class ReportDropdown(Dropdown):
         # call the employee_events method
         # that returns the user-type's
         # names and ids
-        return model.employee_events(entity_id, model)
+        return model.names()
 
 
 # Create a subclass of base_components/BaseComponent
@@ -84,9 +84,12 @@ class LineChart(MatplotlibViz):
         # Use the pandas .fillna method to fill nulls with 0
         pd_data = model.event_counts(entity_id).fillna(0)
         
+        print(pd_data.columns)
+        print(pd_data.head())
+
         # User the pandas .set_index method to set
         # the date column as the index
-        pd_data = pd_data.set_index('date')
+        pd_data = pd_data.set_index('event_date')
         
         # Sort the index
         pd_data = pd_data.sort_index()
@@ -107,7 +110,7 @@ class LineChart(MatplotlibViz):
         
         # call the .plot method for the
         # cumulative counts dataframe
-        pd_data.plot(x=ax)
+        pd_data.plot(ax=ax)
         
         # pass the axis variable
         # to the `.set_axis_styling`
@@ -116,7 +119,7 @@ class LineChart(MatplotlibViz):
         # the border color and font color to black. 
         # Reference the base_components/matplotlib_viz file 
         # to inspect the supported keyword arguments
-        self.set_axis_styling(ax, border_color='black', font_color='black')
+        self.set_axis_styling(ax, bordercolor='black', fontcolor='black')
         
         # Set title and labels for x and y axis
         ax.set_title('Cumulative Event Counts Over Time', fontsize=20)
@@ -130,7 +133,7 @@ class BarChart(MatplotlibViz):
     # Create a `predictor` class attribute
     # assign the attribute to the output
     # of the `load_model` utils function
-    predictor = Utils.load_model('recruitment_risk')
+    predictor = Utils.load_model()
 
 
     # Overwrite the parent class `visualization` method
@@ -176,7 +179,7 @@ class BarChart(MatplotlibViz):
         # to the `.set_axis_styling`
         # method
         ax.set_yticks([])
-        self.set_axis_styling(ax, border_color='black', font_color='black')
+        self.set_axis_styling(ax, bordercolor='black', fontcolor='black')
  
 # Create a subclass of combined_components/CombinedComponent
 # called Visualizations       
@@ -197,7 +200,7 @@ class NotesTable(DataTable):
 
     # Overwrite the `component_data` method
     # using the same parameters as the parent class
-    def component_data(self, model, entity_id):
+    def component_data(self, entity_id, model):
         
         # Using the model and entity_id arguments
         # pass the entity_id to the model's .notes 
@@ -265,7 +268,7 @@ def home():
 # parameterize the employee ID 
 # to a string datatype
 @app.get('/employee/{employee_id}')
-def employee_profile(employee_id):
+def employee_profile(employee_id: str):
 
     # Call the initialized report
     # pass the ID and an instance
@@ -281,7 +284,7 @@ def employee_profile(employee_id):
 # parameterize the team ID 
 # to a string datatype
 @app.get('/team/{team_id}')
-def team_profile(team_id):
+def team_profile(team_id:str):
 
     # Call the initialized report
     # pass the id and an instance
