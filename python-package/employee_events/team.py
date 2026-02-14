@@ -1,6 +1,6 @@
 # Import the QueryBase class
 import sqlite3
-from turtle import pd
+import pandas as pd
 from .query_base import QueryBase
 
 # Import dependencies for sql execution
@@ -62,14 +62,14 @@ class Team(QueryBase):
 
         sql = f"""
             SELECT positive_events, negative_events FROM (
-                    SELECT employee_id
+                    SELECT employee_events.employee_id
                          , SUM(positive_events) positive_events
                          , SUM(negative_events) negative_events
                     FROM {self.name}
                     JOIN employee_events
                         USING({self.name}_id)
                     WHERE {self.name}.{self.name}_id = {id}
-                    GROUP BY employee_id
+                    GROUP BY employee_events.employee_id
                    )
                 """
         return self.query(sql) 

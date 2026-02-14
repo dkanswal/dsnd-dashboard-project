@@ -84,9 +84,6 @@ class LineChart(MatplotlibViz):
         # Use the pandas .fillna method to fill nulls with 0
         pd_data = model.event_counts(entity_id).fillna(0)
         
-        print(pd_data.columns)
-        print(pd_data.head())
-
         # User the pandas .set_index method to set
         # the date column as the index
         pd_data = pd_data.set_index('event_date')
@@ -110,7 +107,14 @@ class LineChart(MatplotlibViz):
         
         # call the .plot method for the
         # cumulative counts dataframe
-        pd_data.plot(ax=ax)
+        if pd_data.empty:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            ax.text(0.5, 0.5, "No event data available",
+                    ha='center', va='center', transform=ax.transAxes)
+            ax.set_xticks([])
+            ax.set_yticks([])
+        else:
+            pd_data.plot(ax=ax)
         
         # pass the axis variable
         # to the `.set_axis_styling`

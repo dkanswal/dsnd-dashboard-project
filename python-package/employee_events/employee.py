@@ -29,13 +29,13 @@ class Employee(QueryBase):
         # 2. The employee's id
         # This query should return the data
         # for all employees in the database
-        sql ="""
+        sql_query ="""
             SELECT 
                 first_name || ' ' || last_name AS full_name,
                 employee_id
             FROM employee;
         """
-        return self.query(sql)
+        return self.query(sql_query)
 
     # Define a method called `username`
     # that receives an `id` argument
